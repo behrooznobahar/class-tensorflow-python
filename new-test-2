@@ -1,1 +1,119 @@
+rom pydoc import Doc, doc
+from tkinter import PIESLICE
+from traceback import print_exc
+import numpy as np
+import tensorflow as tf
+from matplotlib import pyplot as plt
+
+batch_size = 32
+img_height, img_width=180,180
+
+data_dir = 'C:\\Users\\Mr.Shahi\\Desktop\\DataImages'
+
+train_data = tf.keras.utils.image_dataset_from_directory(
+    data_dir,
+    validation_split=0.2,
+    subset="training",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size)
+
+for images, labels in train_data.take(1):
+  print(images.shape)
+
+val_data = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.2,
+  subset="validation",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+
+class_names = train_data.class_names
+print(class_names)
+
+plt.figure(figsize=(5, 5))
+for images, labels in train_data.take(1):
+  for i in range(9):
+    plt.subplot(3, 3, i + 1)
+    plt.imshow(images[i].numpy().astype(np.uint8))
+    plt.title(class_names[labels[i]])
+    plt.axis("off")
+    
+plt.show()
+
+"""class my_nural_netsequential(tf.keras.Model):
+  def __init__(self):
+    super(my_nural_netsequential,self).__init__()
+    self.all_in_one = tf.keras.Sequential([tf.keras.layers.Dense(32,activation='relu')])
+  def call(self,x: tf.Tensor)->tf.Tensor:
+    output=self.all_in_one(x)
+    return output
+"""
+
+"""model=my_nural_netsequential()
+model.build((180,180,3))
+model.summary()
+"""
+
+"""model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+
+
+
+for images, labels in train_data:
+  model.fit(images, labels, epochs=5)
+  
+
+"""
+model = tf.keras.Sequential([
+    tf.keras.layers.Flatten(input_shape=(180, 180,3)),
+    tf.keras.layers.Dense(100, activation='relu'),
+    tf.keras.layers.Dense(len(class_names))
+])
+
+model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+for train_images,train_labels in train_data:
+  model.fit(train_images, train_labels, epochs=20)
+
+for test_images,test_labels in val_data:
+  test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+
+print('\nTest accuracy loss:', test_loss,'\nTest accuracy:', test_acc)
+
+probability_model = tf.keras.Sequential([model,tf.keras.layers.Softmax()])
+
+
+
+
+
+
+
+
+
+data_dir = 'C:\\Users\\Mr.Shahi\\Desktop\\TestImages'
+test_image = tf.keras.utils.image_dataset_from_directory(
+  data_dir,
+  validation_split=0.1,
+  subset="validation",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
+
+
+
+a= -1   
+plt.figure(figsize=(5, 5))
+for images, labels in test_image:
+  a+=1
+  predictions = probability_model.predict(images)
+  print(class_names[np.argmax(predictions[a])])
+  print(predictions)
+
+  
+
 
