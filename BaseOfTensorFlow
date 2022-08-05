@@ -1,4 +1,4 @@
-rom pydoc import Doc, doc
+from pydoc import Doc, doc
 from tkinter import PIESLICE
 from traceback import print_exc
 import numpy as np
